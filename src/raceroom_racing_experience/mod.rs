@@ -35,32 +35,34 @@ impl Client {
     }
 
     pub async fn next_sim_state(&mut self) -> Result<SimState> {
-        loop {
-            let r3e_shared = unsafe { self.shared_memory.copy_as::<bindings::r3e_shared>() };
-            let r3e_shared_retry = unsafe { self.shared_memory.copy_as::<bindings::r3e_shared>() };
-            if r3e_shared != r3e_shared_retry {
-                // Retry until we are sure we didn't catch shared memory mid-write
-                continue;
-            }
-            if r3e_shared.version_major != bindings::R3E_VERSION_MAJOR
-                || r3e_shared.version_minor < bindings::R3E_VERSION_MINOR
-            {
-                let major = r3e_shared.version_major;
-                let minor = r3e_shared.version_minor;
-                bail!(
-                    "API version {}.{} is incompatible with {}.{} version from the game",
-                    bindings::R3E_VERSION_MAJOR,
-                    bindings::R3E_VERSION_MINOR,
-                    major,
-                    minor,
-                );
-            }
-            if self.last_ticks == r3e_shared.player.game_simulation_ticks {
-                continue;
-            }
-            self.last_ticks = r3e_shared.player.game_simulation_ticks;
-            return Ok(SimState { r3e_shared });
-        }
+        let r3e_shared = unsafe { self.shared_memory.copy_as::<bindings::r3e_shared>() };
+        // loop {
+        //     let r3e_shared = unsafe { self.shared_memory.copy_as::<bindings::r3e_shared>() };
+        //     let r3e_shared_retry = unsafe { self.shared_memory.copy_as::<bindings::r3e_shared>() };
+        //     if r3e_shared != r3e_shared_retry {
+        //         // Retry until we are sure we didn't catch shared memory mid-write
+        //         continue;
+        //     }
+        //     if r3e_shared.version_major != bindings::R3E_VERSION_MAJOR
+        //         || r3e_shared.version_minor < bindings::R3E_VERSION_MINOR
+        //     {
+        //         let major = r3e_shared.version_major;
+        //         let minor = r3e_shared.version_minor;
+        //         bail!(
+        //             "API version {}.{} is incompatible with {}.{} version from the game",
+        //             bindings::R3E_VERSION_MAJOR,
+        //             bindings::R3E_VERSION_MINOR,
+        //             major,
+        //             minor,
+        //         );
+        //     }
+        //     if self.last_ticks == r3e_shared.player.game_simulation_ticks {
+        //         continue;
+        //     }
+        //     self.last_ticks = r3e_shared.player.game_simulation_ticks;
+        //     return Ok(SimState { r3e_shared });
+        // }
+        return Ok(SimState { r3e_shared });
     }
 }
 
